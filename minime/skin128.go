@@ -9,16 +9,26 @@ import (
 // Skin128 returns an avatar generated from a skin that is 128x128 pixels. The skin must also be in the Minecraft format
 // otherwise the generated result may not look correct. If the skin is slim (using the Alex model), slim should be set
 // to true for the best results.
-func Skin128(src image.Image, slim bool) image.Image {
-	dst := image.NewRGBA(image.Rect(0, 0, 18, 28))
+func Skin128(src image.Image, scale int, slim bool) image.Image {
+	dst := image.NewRGBA(image.Rect(0, 0, 18*scale, 28*scale))
+
+	// Function to set scaled pixels
+	setScaledPixel := func(x, y int, c color.Color) {
+		for dx := 0; dx < scale; dx++ {
+			for dy := 0; dy < scale; dy++ {
+				dst.Set(x*scale+dx, y*scale+dy, c)
+			}
+		}
+	}
+
 	// Head
 	for x := 0; x < 18; x++ {
 		for y := 0; y < 18; y++ {
 			if x == 0 || x == 17 || y == 0 || y == 17 {
-				dst.Set(x, y, color.Black)
+				setScaledPixel(x, y, color.Black)
 				continue
 			}
-			dst.Set(x, y, findSuitablePixel(src, x+79, y+15, x+15, y+15))
+			setScaledPixel(x, y, findSuitablePixel(src, x+79, y+15, x+15, y+15))
 		}
 	}
 
@@ -26,7 +36,7 @@ func Skin128(src image.Image, slim bool) image.Image {
 	for x := 0; x < 12; x++ {
 		for y := 0; y < 6; y++ {
 			if x == 0 || x == 11 || y == 0 || y == 5 {
-				dst.Set(x+3, y+17, color.Black)
+				setScaledPixel(x+3, y+17, color.Black)
 				continue
 			} else if x > 2 && x < 9 {
 				continue
@@ -36,9 +46,9 @@ func Skin128(src image.Image, slim bool) image.Image {
 				xOff--
 			}
 			if x < 3 {
-				dst.Set(x+3, y+17, findSuitablePixel(src, 90+xOff, 73+yOff, 90+xOff, 41+yOff))
+				setScaledPixel(x+3, y+17, findSuitablePixel(src, 90+xOff, 73+yOff, 90+xOff, 41+yOff))
 			} else {
-				dst.Set(x+3, y+17, findSuitablePixel(src, 106+xOff, 105+yOff, 74+xOff, 105+yOff))
+				setScaledPixel(x+3, y+17, findSuitablePixel(src, 106+xOff, 105+yOff, 74+xOff, 105+yOff))
 			}
 		}
 	}
@@ -47,14 +57,14 @@ func Skin128(src image.Image, slim bool) image.Image {
 	for x := 0; x < 6; x++ {
 		for y := 0; y < 11; y++ {
 			if x == 0 || x == 5 || y == 0 || y == 7 || y == 10 {
-				dst.Set(x+6, y+17, color.Black)
+				setScaledPixel(x+6, y+17, color.Black)
 				continue
 			} else if y > 7 {
 				xOff, yOff := (int(math.Ceil(float64(x)/2))-1)*4, (y-8)*9
 				if x < 3 {
-					dst.Set(x+6, y+17, findSuitablePixel(src, 10+xOff, 83+yOff, 10+xOff, 51+yOff))
+					setScaledPixel(x+6, y+17, findSuitablePixel(src, 10+xOff, 83+yOff, 10+xOff, 51+yOff))
 				} else {
-					dst.Set(x+6, y+17, findSuitablePixel(src, 10+xOff, 115+yOff, 42+xOff, 115+yOff))
+					setScaledPixel(x+6, y+17, findSuitablePixel(src, 10+xOff, 115+yOff, 42+xOff, 115+yOff))
 				}
 				continue
 			}
@@ -65,7 +75,7 @@ func Skin128(src image.Image, slim bool) image.Image {
 			if y > 3 {
 				yOff++
 			}
-			dst.Set(x+6, y+17, findSuitablePixel(src, 42+xOff, 73+yOff, 42+xOff, 41+yOff))
+			setScaledPixel(x+6, y+17, findSuitablePixel(src, 42+xOff, 73+yOff, 42+xOff, 41+yOff))
 		}
 	}
 	return dst

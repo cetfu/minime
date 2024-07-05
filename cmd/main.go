@@ -3,7 +3,7 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"github.com/twistedasylummc/minime"
+	minime2 "github.com/twistedasylummc/minime/minime"
 	"image"
 	"image/png"
 	"os"
@@ -39,13 +39,13 @@ func main() {
 
 	var dst image.Image
 	if res == 1 {
-		dst = minime.Skin64(src)
+		dst = minime2.Skin64(src)
 	} else {
 		var slim bool
 		if len(os.Args) > 3 && os.Args[3] == "slim" {
 			slim = true
 		}
-		dst = minime.Skin128(src, slim)
+		dst = minime2.Skin128(src, slim)
 	}
 
 	if err = os.MkdirAll(filepath.Dir(os.Args[2]), 0666); err != nil {
